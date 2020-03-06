@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "paymentservice.name" . }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ include "paymentservice.name" . }}
+  ports:
+    - name: grpc
+      port: 50051
+      targetPort: 50051

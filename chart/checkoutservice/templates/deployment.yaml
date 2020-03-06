@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  {{ include "paymentservice.name" . }}
+spec:
+  selector:
+    matchLabels:
+      app:  {{ include "paymentservice.name" . }}
+  template:
+    metadata:
+      labels:
+        app:  {{ include "paymentservice.name" . }}
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: {{ include "paymentservice.name" . }}
+          image: "{{ .Values.DockerRepo }}:{{ .Values.DockerTag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }} 
+          ports:
+          - containerPort: 50051
+          env:
+          - name: PORT
+            value: "50051"
+          readinessProbe:
+            exec:
+              command: ["/bin/grpc_health_probe", "-addr=:50051"]
+          livenessProbe:
+            exec:
+              command: ["/bin/grpc_health_probe", "-addr=:50051"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
